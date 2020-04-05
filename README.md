@@ -1,4 +1,15 @@
-# About The Bot
+# About Sybil
+
+This bot is based on Goose, original Readme is below.
+
+Currently Sybil is 100% focused on using all the basic barebones stuff that Goose has to interact with Discord and
+teach it how to talk to a Hush RPC interface. The first use case is z2z tipping between Discord users. Once that works correctly, other features may be added.
+
+The reason for Sybil is that Hush must have a z2z tipbot to correctly transition to be a z2z chain, so this will replace
+our current tipbot which is a hosted service that does not support zaddrs.
+
+
+# About Goose
 
 This is a Discord bot built on the [Mojo::Discord](https://github.com/vsTerminus/Net-Discord) framework. It can do some potentially useful things on your server, mostly involving displaying information from other websites (eg YouTube and Last.FM).
 
