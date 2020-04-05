@@ -40,7 +40,7 @@ sub BUILD
 sub new_zaddr
 {
     my $self = shift;
-    return $self->rpc->getnewaddress();
+    return $self->rpc->z_getnewaddress();
 }
 
 sub send

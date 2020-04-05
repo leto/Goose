@@ -31,10 +31,12 @@ sub cmd_info
     my $args = $msg->{'content'};
 
     my $info;
+    my $join_url = "https://discordapp.com/oauth2/authorize?client_id=XXX&scope=bot&permissions=YYY";
+    my $discord_url = "https://myhush.org/discord";
 
     $info = "**Info**\n" .
-            'I am a Goose Bot by vsTerminus' . "\n" .
-            "I am a semi-useful chat-bot that provides services such as `!weather`, `!nowplaying`, and `!youtube`\n".
+            'I am a Sybil Bot by Duke Leto, based on Goose Bot by vsTerminus' . "\n" .
+            "I provide useful services such as `!tip`, `!deposit`, and `!withdraw`\n".
             "Try the `!help` command for a complete listing.\n\n" .
             "**Source Code**\n" .
             "I am open source! I am written in Perl, and am built on the Mojo::Discord library `[1]`\n" .
@@ -44,10 +46,10 @@ sub cmd_info
             "**Join My Server**\n" .
             "I have a public Discord server you can join where you can monitor my github feed and mess with the bot without irritating all your friends. Check it out below! `[4]`\n\n" .
             "**Links**\n".
-            "`[1]` <https://github.com/vsTerminus/Net-Discord>\n".
-            "`[2]` <https://github.com/vsTerminus/Goose>\n".
-            "`[3]` <https://discordapp.com/oauth2/authorize?client_id=231059560977137664&scope=bot&permissions=536890368>\n" .
-            "`[4]` <https://discord.gg/FuKTcHF>\n";
+            "`[1]` <https://github.com/vsTerminus/Mojo-Discord>\n".
+            "`[2]` <https://github.com/leto/sybil>\n".
+            "`[3]` <$join_url>\n" .
+            "`[4]` <$discord_url>\n";
 
     $self->discord->send_ack_dm($channel, $msg->{'id'}, $author->{'id'}, $info);
 }

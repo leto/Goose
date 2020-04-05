@@ -38,25 +38,12 @@ sub cmd_pick
     my $discord = $self->discord;
     my $replyto = '<@' . $author->{'id'} . '>';
 
-    my $quiznos = 0;
-
     my @picks = split (/,+/, $args);
-
     my $count = scalar @picks;
     my $pick = int(rand($count));
 
     $pick =~ s/^ *//;
     
-    for (my $i = 0; $i < $count; $i++)
-    {
-        if ( $picks[$i] =~ /^\s*quiznos\s*$/i )
-        {
-            # Always pick Quiznos
-            $pick = $i; 
-            $quiznos = 1;
-        }
-    }
-
     # Send a message back to the channel
     $discord->send_message($channel, ":point_right: $picks[$pick]");
 }
