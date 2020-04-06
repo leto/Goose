@@ -47,8 +47,13 @@ sub send
 {
     my $self = shift;
     my ($from,$to,$amount,$memo) = @_;
-    # TODO: do this correctly
-    $self->rpc->z_sendmany($from,$to,$amount,$memo);
+    my $recipients = [];
+    push @$recipients, {
+        address => $to,
+        amount  => $amount,
+        memo    => $memo,
+    };
+    $self->rpc->z_sendmany($from,$recipients);
 }
 
 sub balance
