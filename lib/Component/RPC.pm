@@ -56,16 +56,22 @@ sub send
     $self->rpc->z_sendmany($from,$recipients);
 }
 
+# returns the balances of a zaddr: unconfirmed (confs=0), confirmed (confs=1) and notarized (confs=2)
 sub balance
 {
     my $self = shift;
-    my ($zaddr) = @_;
-    # TODO: support unconfirmed, confirmed, notarized
+    my ($z)  = @_;
+    my $rpc         = $self->rpc;
+    my $unconfirmed = $rpc->z_gettotalbalance($z,0);
+    my $confirmed   = $rpc->z_gettotalbalance($z,1);
+    my $notarized   = $rpc->z_gettotalbalance($z,2);
 
-    return (0,0,0);
+    return {
+        unconfirmed => $unconfirmed,
+        confirmed   => $confirmed,
+        notarized   => $notarized,
+    };
 }
-
-
 
 __PACKAGE__->meta->make_immutable;
 

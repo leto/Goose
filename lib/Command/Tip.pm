@@ -10,11 +10,12 @@ use Exporter qw(import);
 our @EXPORT_OK = qw(cmd_tip);
 
 use Component::RPC;
+use Redis;
 
 has bot                 => ( is => 'ro' );
 has discord             => ( is => 'lazy', builder => sub { shift->bot->discord } );
 has log                 => ( is => 'lazy', builder => sub { shift->bot->log } );
-
+has rpc                 => ( is => 'ro', default => sub { Component::RPC->new } );
 has name                => ( is => 'ro', default => 'Tip' );
 has access              => ( is => 'ro', default => 0 ); # 0 = Public, 1 = Bot-Owner Only
 has description         => ( is => 'ro', default => 'Tip another user' );
@@ -31,11 +32,9 @@ EOF
 sub cmd_tip
 {
     my ($self, $msg) = @_;
-
-    my $channel = $msg->{'channel_id'};
-    my $author = $msg->{'author'};
-
-    my $args = $msg->{'content'};
+    my $channel      = $msg->{channel_id};
+    my $author       = $msg->{author};
+    my $args         = $msg->{content};
     # "$args" contains the command and the arguments the user typed.
     # Most of the time we'll want to strip the command out of $msg and just look at the arguments.
     # You can use $self->pattern to do this.
@@ -48,7 +47,7 @@ sub cmd_tip
     $self->bot->log->debug('[Tip] [cmd_tip] ' . Data::Dumper->Dump([$msg], ['msg']));
     say Data::Dumper->Dump([$args], ['args']);
 
-    my $rpc = Component::RPC->new;
+    my $rpc = $self->rpc;
 
     # You know the channel the message came from and who sent it.
     # You can use that information to tailor your reply (eg, mention the user or not, look up other info on them, etc)
@@ -56,6 +55,11 @@ sub cmd_tip
 
     # Send a message back to the channel
     $self->discord->send_message($channel, $reply);
+}
+
+sub send_tip
+{
+    my ($self,$user,$amount,$memo) = @_;
 }
 
 1;
