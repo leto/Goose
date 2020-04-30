@@ -18,6 +18,7 @@ has log                 => ( is => 'lazy', builder => sub { shift->bot->log } );
 has rpc                 => ( is => 'ro', default => sub { Component::RPC->new } );
 has name                => ( is => 'ro', default => 'Tip' );
 has access              => ( is => 'ro', default => 0 ); # 0 = Public, 1 = Bot-Owner Only
+has redis               => ( is => 'ro', default => sub { Redis->new(reconnect=>2, every=>100_000 ) } );
 has description         => ( is => 'ro', default => 'Tip another user' );
 has pattern             => ( is => 'ro', default => '^tip ?' );
 has function            => ( is => 'ro', default => sub { \&cmd_tip } );
@@ -56,7 +57,21 @@ sub cmd_tip
         my $to     = $1;
         my $amount = $2;
         my $ticker = $3 || 'HUSH';
-        $opid = $self->send_tip($from,$to,$amount,$memo);
+        # TODO: find the zaddr corresponding to this recipient
+        my $zaddr  = "";
+        if ($zaddr = $self->redis->get("discord:$to")) {
+            say "Found $zaddr for $to";
+        } else {
+            # that discord user has no zaddr, make one
+            $zaddr = $rpc->new_zaddr();
+            die "Unable to make new zaddr!" unless $zaddr;
+            say "Created $zaddr for $to";
+            $self->redis->set( "discord:$to"  => $zaddr );
+            $self->redis->set( "zaddr:$zaddr" => $to );
+            say "Cached $to <=> $zaddr in Redis";
+        }
+        # actually send the tip
+        $opid = $self->send_tip($from,$zaddr,$amount,$memo);
     } else {
         $opid = "INVALID";
     }
