@@ -62,6 +62,7 @@ sub balance
     my $self = shift;
     my ($z)  = @_;
     my $rpc         = $self->rpc;
+    # TODO: maybe even make a new RPC that does this in one shot?
     my $unconfirmed = $rpc->z_gettotalbalance($z,0);
     my $confirmed   = $rpc->z_gettotalbalance($z,1);
     my $notarized   = $rpc->z_gettotalbalance($z,2);

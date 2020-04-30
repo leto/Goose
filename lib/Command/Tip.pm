@@ -48,18 +48,33 @@ sub cmd_tip
     say Data::Dumper->Dump([$args], ['args']);
 
     my $rpc = $self->rpc;
+    my $opid;
+
+    # HUSH is the default currency unless specified
+    # TODO: lock down this regex to only required inputs
+    if($args =~ m/(^[^ ]+) ([^ ]+) ([^ ]+)?$/) {
+        my $to     = $1;
+        my $amount = $2;
+        my $ticker = $3 || 'HUSH';
+        $opid = $self->send_tip($from,$to,$amount,$memo);
+    } else {
+        $opid = "INVALID";
+    }
 
     # You know the channel the message came from and who sent it.
     # You can use that information to tailor your reply (eg, mention the user or not, look up other info on them, etc)
     my $reply = ( length $args ? "Your message was:\n```\n$args\n```" : "Your Discord ID is: " . $author->{'id'} );
 
+    $reply .="\nopid=$opid";
     # Send a message back to the channel
     $self->discord->send_message($channel, $reply);
 }
 
 sub send_tip
 {
-    my ($self,$user,$amount,$memo) = @_;
+    my ($self,$from,$to,$amount,$memo) = @_;
+    my $opid = $self->rpc->send($from,$to,$amount,$memo);
+    return $opid;
 }
 
 1;
