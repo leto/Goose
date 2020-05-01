@@ -10,7 +10,7 @@ use namespace::clean;
 use Bitcoin::RPC::Client;
 
 use Exporter qw(import);
-our @EXPORT_OK = qw(weather);
+our @EXPORT_OK = qw();
 
 has username    => ( is => 'rw', default => 'hush' );
 has password    => ( is => 'rw', default => 'hush' );

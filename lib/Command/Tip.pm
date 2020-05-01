@@ -25,8 +25,9 @@ has function            => ( is => 'ro', default => sub { \&cmd_tip } );
 has usage               => ( is => 'ro', default => <<EOF
 Tip another Discord user to their zaddr
 
-Basic Usage: !tip @user amount
-Advanced Usage: !tip @alice @bob amount
+Basic Usage: !tip @alice amount
+Advanced Usage: !tip @alice amount "Custom memo"
+Advanced Usage: !tip @alice, @bob amount
 EOF
 );
 
@@ -54,22 +55,13 @@ sub cmd_tip
     # HUSH is the default currency unless specified
     # TODO: lock down this regex to only required inputs
     if($args =~ m/(^[^ ]+) ([^ ]+) ([^ ]+)?$/) {
-        my $to     = $1;
+        my $user   = $1;
         my $amount = $2;
         my $ticker = $3 || 'HUSH';
-        # TODO: find the zaddr corresponding to this recipient
-        my $zaddr  = "";
-        if ($zaddr = $self->redis->get("discord:$to")) {
-            say "Found $zaddr for $to";
-        } else {
-            # that discord user has no zaddr, make one
-            $zaddr = $rpc->new_zaddr();
-            die "Unable to make new zaddr!" unless $zaddr;
-            say "Created $zaddr for $to";
-            $self->redis->set( "discord:$to"  => $zaddr );
-            $self->redis->set( "zaddr:$zaddr" => $to );
-            say "Cached $to <=> $zaddr in Redis";
-        }
+        my $zaddr  = $self->redis->get_or_create_zaddr_for_discord_user($user);
+        $self->redis->set( "discord:$to"  => $zaddr );
+        $self->redis->set( "zaddr:$zaddr" => $to );
+        say "Saved $to <=> $zaddr in Redis";
         # actually send the tip
         $opid = $self->send_tip($from,$zaddr,$amount,$memo);
     } else {
